@@ -1,253 +1,205 @@
-<!doctype html>
+       <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ImunizaQuiz</title>
 <style>
-  :root{
-    --bg:#ffffff; --accentA:#1E3A8A; --accentB:#60A5FA;
-    --muted:#475569; --text:#071024; --card:#FFFFFF; --radius:12px;
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: linear-gradient(to bottom, #cce7ff, #ffffff);
+    color: #002855;
+    margin: 0;
+    padding: 0;
   }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
-    background:linear-gradient(180deg,#1E3A8A,#60A5FA);
-    color:var(--text);padding:18px;display:flex;align-items:center;justify-content:center;
+
+  h1 {
+    margin-top: 20px;
+    font-size: 2.5em;
   }
-  .wrap{width:100%;max-width:980px;border-radius:14px;padding:18px;box-shadow:0 12px 30px rgba(7,18,38,0.18);background:#ffffffee}
-  header{text-align:center;margin-bottom:16px}
-  .logo{width:70px;height:70px;border-radius:14px;background:linear-gradient(135deg,var(--accentA),var(--accentB));display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:22px;margin:0 auto 10px}
-  h1{font-size:26px;margin:0;color:#071024}
-  p.lead{margin:0;color:var(--muted);font-size:15px}
-  .team-photo{width:100%;border-radius:14px;margin-top:16px;box-shadow:0 4px 10px rgba(0,0,0,0.12)}
-  .layout{display:grid;grid-template-columns:1fr 300px;gap:14px;margin-top:12px}
-  @media(max-width:860px){.layout{grid-template-columns:1fr}.sidebar{order:2}}
-  .card{background:var(--card);border-radius:10px;padding:14px;box-shadow:0 8px 18px rgba(2,6,23,0.05)}
-  input[type="text"]{padding:12px 14px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);width:260px;font-size:15px}
-  button{background:linear-gradient(90deg,var(--accentA),var(--accentB));color:white;border:none;padding:12px 14px;border-radius:10px;font-weight:700;cursor:pointer;font-size:15px}
-  .muted{color:var(--muted);font-size:13px}
-  .question-box{padding:14px;border-radius:10px;margin-top:8px;border:1px solid rgba(96,165,250,0.1);background:#fff}
-  .question-text{font-weight:800;font-size:18px}
-  .choices{display:grid;gap:10px;margin-top:12px}
-  .choice{display:flex;gap:12px;align-items:center;padding:14px;border-radius:10px;background:#fff;border:1px solid rgba(15,23,42,0.06);cursor:pointer;user-select:none;font-size:15px}
-  .choice:active{opacity:0.95}
-  .tiny{font-size:13px;color:var(--muted)}
-  .center{display:flex;justify-content:center;align-items:center;gap:10px}
-  .leaderboard-item{display:flex;justify-content:space-between;padding:8px;border-radius:8px;border:1px dashed rgba(15,23,42,0.04);align-items:center;margin-bottom:8px}
-  footer.small{margin-top:12px;color:var(--muted);font-size:12px;text-align:center}
-  @media (max-width:420px){
-    input[type="text"]{width:160px}
-    .choice{padding:16px;font-size:16px}
-    button{padding:12px 14px;font-size:16px}
+
+  img {
+    width: 80%;
+    max-width: 400px;
+    border-radius: 15px;
+    margin: 15px auto;
+    display: block;
+  }
+
+  #container {
+    background: white;
+    padding: 20px;
+    margin: 20px auto;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+
+  #cronometro {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  button {
+    background-color: #0077ff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    margin: 8px;
+    cursor: pointer;
+    font-size: 1em;
+  }
+
+  button:hover {
+    background-color: #005ec7;
+  }
+
+  #nomeInput {
+    padding: 8px;
+    font-size: 1em;
   }
 </style>
 </head>
 <body>
-  <div class="wrap" role="main">
-    <header>
-      <div class="logo">IQ</div>
-      <h1>ImunizaQuiz</h1>
-      <p class="lead">Inovações em imunização & combate à infodemia — jogo para apresentação</p>
-      <img src="foto.png" alt="Equipe ImunizaQuiz" class="team-photo">
-    </header>
 
-    <div class="layout">
-      <div>
-        <div class="card" id="gameCard">
-          <!-- REGISTER -->
-          <div id="registerScreen">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-              <div>
-                <div class="muted">Digite seu nome</div>
-                <div style="margin-top:8px">
-                  <input id="playerName" type="text" placeholder="Seu nome (apenas nome)" autocomplete="off" />
-                </div>
-              </div>
-              <div style="text-align:right">
-                <div class="tiny muted">Pronto?</div>
-                <div style="margin-top:8px"><button id="startBtn">Começar</button></div>
-              </div>
-            </div>
-            <div style="margin-top:10px" class="tiny muted">Durante o jogo não aparece tempo nem pontuação — só o resultado final no fim.</div>
-          </div>
+  <h1>ImunizaQuiz</h1>
+  <img src="foto.png" alt="Equipe ImunizaQuiz">
 
-          <!-- QUIZ -->
-          <div id="quizArea" style="display:none">
-            <div class="question-box" aria-live="polite">
-              <div class="muted tiny" id="qIndex">Pergunta 1 / 15</div>
-              <div class="question-text" id="questionText">Carregando...</div>
-              <div class="choices" id="choicesList"></div>
-            </div>
+  <div id="container">
+    <div id="inicio">
+      <h2>Digite seu nome para começar</h2>
+      <input type="text" id="nomeInput" placeholder="Seu nome">
+      <br><br>
+      <button onclick="iniciarQuiz()">Começar</button>
+    </div>
 
-            <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
-              <div class="tiny muted" id="progressPct">Progresso: 0%</div>
-              <div style="margin-left:auto" class="tiny muted">Toque em uma resposta para avançar.</div>
-            </div>
-          </div>
+    <div id="quiz" style="display:none;">
+      <div id="cronometro"></div>
+      <h2 id="pergunta"></h2>
+      <div id="opcoes"></div>
+    </div>
 
-          <!-- END -->
-          <div id="endScreen" style="display:none;margin-top:12px;text-align:center">
-            <h2 style="margin:6px 0">Fim do ImunizaQuiz 🎉</h2>
-            <div class="tiny muted">Pontuação final</div>
-            <div style="font-size:44px;font-weight:900;margin-top:8px" id="finalScore">0 pts</div>
-            <div style="margin-top:14px;text-align:left" id="endBoard"></div>
-            <div style="margin-top:12px" class="tiny muted">Para jogar novamente, recarregue a página (F5) ou abra o link de novo.</div>
-          </div>
-        </div>
-        <footer class="small">Salve o arquivo como <code>index.html</code> e faça upload no GitHub Pages.</footer>
-      </div>
-
-      <!-- sidebar -->
-      <aside class="sidebar">
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div><div class="tiny muted">Últimos (local)</div><div style="font-weight:800" id="topName">—</div></div>
-            <div style="text-align:right"><div class="tiny muted">Maior</div><div style="font-weight:800" id="topScore">—</div></div>
-          </div>
-
-          <div style="margin-top:12px" id="leaderboardList"></div>
-
-          <div style="margin-top:10px;display:flex;gap:8px">
-            <button id="clearBoard" style="background:transparent;border:1px solid rgba(15,23,42,0.06);padding:8px 10px;border-radius:8px">Limpar placar</button>
-            <button id="exportBtn" style="background:transparent;border:1px solid rgba(15,23,42,0.06);padding:8px 10px;border-radius:8px">Exportar JSON</button>
-          </div>
-          <div style="margin-top:10px" class="tiny muted">Placar salvo apenas neste navegador.</div>
-        </div>
-      </aside>
+    <div id="resultado" style="display:none;">
+      <h2>Resultado Final</h2>
+      <p id="pontuacaoFinal"></p>
     </div>
   </div>
 
+  <!-- Som do cronômetro -->
+  <audio id="somTempo" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+
 <script>
-/* ===== CONFIG ===== */
-const POINTS_PER_QUESTION = 10;
-const SECONDS_PER_QUESTION = 20;
-const QUESTIONS = [
-  { q:"Qual é o objetivo principal de uma vacina?", choices:["Curar uma doença já instalada","Estimular o sistema imune a reconhecer e combater um agente infeccioso","Substituir medicamentos","Aumentar a temperatura corporal"], answer:1 },
-  { q:"O que é tecnologia mRNA usada em vacinas modernas?", choices:["Introduz vírus vivo no corpo","Instruções para células produzirem proteína viral e gerar resposta imune","Antibiótico novo","Aditivo que aumenta alergias"], answer:1 },
-  { q:"O que significa 'infodemia'?", choices:["Aumento de doenças infecciosas","Excesso de informação (muitas vezes errada) que atrapalha achar a verdade","Nova variante de vírus","Campanha de vacinação"], answer:1 },
-  { q:"Qual atitude ajuda a combater fake news sobre vacinas?", choices:["Compartilhar informações sem checar","Checar em fontes confiáveis (Ministério/OMS)","Ignorar tudo","Confiar apenas em redes sociais"], answer:1 },
-  { q:"Qual inovação logística tem sido usada na entrega de vacinas?", choices:["Drones para áreas remotas","Ligações por rádio somente","Proibir transporte noturno","Vacinar só em hospitais"], answer:0 },
-  { q:"Por que vacinas de dose única são vantajosas?", choices:["São mais caras","Facilitam adesão sem segunda dose","Maior risco","Ineficazes"], answer:1 },
-  { q:"Qual prática NÃO ajuda a diminuir a infodemia?", choices:["Criar materiais educativos","Treinar profissionais de saúde","Eliminar opiniões diferentes","Fazer FAQs oficiais"], answer:2 },
-  { q:"Por que é importante vacinar grande parte da população?", choices:["Protege apenas o vacinado","Cria imunidade coletiva e protege vulneráveis","É só estatística","Substitui higiene"], answer:1 },
-  { q:"Quais são fontes confiáveis para checar vacinas?", choices:["Perfis populares no Instagram","Sites oficiais, universidades e publicações científicas","Mensagens de WhatsApp","Páginas anônimas"], answer:1 },
-  { q:"O que é um ensaio clínico?", choices:["Teste controlado em voluntários para avaliar segurança e eficácia","Campanha de marketing","Distribuição para farmácias","Vacina caseira"], answer:0 },
-  { q:"Como tecnologias digitais ajudam nas campanhas de vacinação?", choices:["Sem utilidade","Rastreamento, agendamento e comunicação oficial","Substituem profissionais","Criando boatos"], answer:1 },
-  { q:"Manchete sensacionalista sem fonte é geralmente:", choices:["Prova confiável","Sinal para checar a fonte antes de compartilhar","Prova científica","Política pública"], answer:1 },
-  { q:"Papel dos profissionais de saúde no combate à infodemia:", choices:["Ignorar dúvidas","Dialogar e indicar fontes confiáveis","Proibir informações","Criar teorias"], answer:1 },
-  { q:"O que garante que uma vacina é segura?", choices:["Testes, ensaios clínicos e órgãos reguladores","Opiniões em redes sociais","Publicidade","Preço"], answer:0 },
-  { q:"Por que identificar a origem de uma notícia é importante?", choices:["Para viralizar","Para verificar credibilidade e evitar boatos","Para concordância geral","Para crédito ao autor"], answer:1 }
+const perguntas = [
+  { pergunta: "O que é o sistema imunológico?", opcoes: ["Um conjunto de órgãos responsáveis pela digestão", "Um sistema de defesa do corpo contra agentes invasores", "Um tipo de vacina", "Uma célula específica do sangue"], correta: 1 },
+  { pergunta: "As vacinas servem para:", opcoes: ["Curar doenças", "Estimular o sistema imunológico a produzir defesa", "Substituir os anticorpos", "Diminuir o apetite"], correta: 1 },
+  { pergunta: "O que são anticorpos?", opcoes: ["Bactérias boas", "Proteínas que reconhecem e neutralizam agentes invasores", "Hormônios do corpo", "Tipos de vírus"], correta: 1 },
+  { pergunta: "Qual órgão produz células de defesa chamadas linfócitos?", opcoes: ["Baço", "Pulmão", "Coração", "Estômago"], correta: 0 },
+  { pergunta: "Qual célula é conhecida como 'soldado' do sistema imunológico?", opcoes: ["Hemácia", "Linfócito", "Plaqueta", "Neurônio"], correta: 1 },
+  { pergunta: "Qual é o principal objetivo da imunização?", opcoes: ["Prevenir doenças", "Tratar infecções", "Aumentar a temperatura corporal", "Eliminar toxinas"], correta: 0 },
+  { pergunta: "O que é uma resposta imunológica?", opcoes: ["A reação do corpo a um alimento", "A reação do corpo contra agentes invasores", "Um tipo de alergia", "Uma vacina"], correta: 1 },
+  { pergunta: "O que significa imunidade de rebanho?", opcoes: ["Quando todos os animais estão vacinados", "Quando grande parte da população está imune", "Um tipo de vírus", "Uma doença contagiosa"], correta: 1 },
+  { pergunta: "As vacinas são seguras?", opcoes: ["Sim, passam por testes rigorosos", "Não, causam doenças", "Depende da marca", "Só algumas"], correta: 0 },
+  { pergunta: "Quem desenvolveu a primeira vacina?", opcoes: ["Louis Pasteur", "Edward Jenner", "Robert Koch", "Alexander Fleming"], correta: 1 },
+  { pergunta: "O que é uma doença autoimune?", opcoes: ["Quando o sistema imunológico ataca o próprio corpo", "Quando o corpo fica sem defesa", "Quando é causada por vírus", "Quando é causada por fungos"], correta: 0 },
+  { pergunta: "O que são linfonodos?", opcoes: ["Pequenas glândulas que filtram a linfa", "Células do cérebro", "Órgãos digestivos", "Partes do coração"], correta: 0 },
+  { pergunta: "Qual célula produz anticorpos?", opcoes: ["Linfócito B", "Linfócito T", "Macrófago", "Plaqueta"], correta: 0 },
+  { pergunta: "O que acontece após uma vacinação?", opcoes: ["O corpo produz anticorpos específicos", "O corpo adoece", "O corpo rejeita a vacina", "Nada muda"], correta: 0 },
+  { pergunta: "Por que é importante manter o cartão de vacinação atualizado?", opcoes: ["Para registrar consultas médicas", "Para garantir proteção contínua contra doenças", "Para evitar filas", "Por estética"], correta: 1 }
 ];
 
-/* ===== STATE & ELEMENTS ===== */
-const startBtn = document.getElementById('startBtn');
-const registerScreen = document.getElementById('registerScreen');
-const quizArea = document.getElementById('quizArea');
-const endScreen = document.getElementById('endScreen');
-const playerNameInput = document.getElementById('playerName');
-const qIndex = document.getElementById('qIndex');
-const questionText = document.getElementById('questionText');
-const choicesList = document.getElementById('choicesList');
-const progressPct = document.getElementById('progressPct');
-const finalScore = document.getElementById('finalScore');
-const endBoard = document.getElementById('endBoard');
-const leaderboardKey = 'imunizaquiz_github_cleiitoon87_v1';
-let state = { name:null, index:0, score:0, timerId:null };
+let nomeJogador = "";
+let indice = 0;
+let pontuacao = 0;
+const POINTS_PER_QUESTION = 10;
+let tempo = 15;
+let cronometroInterval;
 
-/* ===== LEADERBOARD ===== */
-function loadLB(){ try{ const raw = localStorage.getItem(leaderboardKey); return raw?JSON.parse(raw):[] }catch(e){return[] } }
-function saveLB(arr){ localStorage.setItem(leaderboardKey, JSON.stringify(arr)); renderSidebar(); }
-function renderSidebar(){
-  const list = loadLB().slice(); // most recent first already
-  const div = document.getElementById('leaderboardList'); div.innerHTML='';
-  if(list.length===0){ div.innerHTML = '<div class="tiny muted">Nenhum resultado ainda.</div>'; document.getElementById('topName').innerText='—'; document.getElementById('topScore').innerText='—'; return; }
-  // determine top score
-  const top = list.slice().sort((a,b)=>b.score-a.score)[0];
-  document.getElementById('topName').innerText = top ? top.name : '—';
-  document.getElementById('topScore').innerText = top ? (top.score + ' pts') : '—';
-  // show up to last 10 (most recent first)
-  const last = list.slice(0,10);
-  last.forEach(item=>{
-    const el = document.createElement('div'); el.className='leaderboard-item';
-    el.innerHTML = `<div style="font-weight:800">${escapeHtml(item.name)}</div><div class="tiny">${item.score} pts • ${new Date(item.date).toLocaleString()}</div>`;
-    div.appendChild(el);
+// inicia o quiz
+function iniciarQuiz() {
+  nomeJogador = document.getElementById("nomeInput").value.trim();
+  if (nomeJogador === "") {
+    alert("Por favor, digite seu nome!");
+    return;
+  }
+  document.getElementById("inicio").style.display = "none";
+  document.getElementById("quiz").style.display = "block";
+  mostrarPergunta();
+}
+
+// mostra cada pergunta
+function mostrarPergunta() {
+  if (indice >= perguntas.length) {
+    return mostrarResultado();
+  }
+
+  const atual = perguntas[indice];
+  document.getElementById("pergunta").textContent = atual.pergunta;
+
+  const opcoesDiv = document.getElementById("opcoes");
+  opcoesDiv.innerHTML = "";
+  atual.opcoes.forEach((op, i) => {
+    const btn = document.createElement("button");
+    btn.textContent = op;
+    btn.onclick = () => verificarResposta(i);
+    opcoesDiv.appendChild(btn);
   });
-}
-function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m])); }
 
-/* ===== GAME FLOW ===== */
-startBtn.addEventListener('click', ()=>{
-  const name = playerNameInput.value.trim();
-  if(!name){ alert('Coloque seu nome para começar.'); playerNameInput.focus(); return; }
-  state.name = name;
-  state.index = 0; state.score = 0;
-  registerScreen.style.display='none'; quizArea.style.display=''; endScreen.style.display='none';
-  renderQuestion(); renderSidebar();
-});
-
-function renderQuestion(){
-  clearTimer();
-  const q = QUESTIONS[state.index];
-  qIndex.innerText = `Pergunta ${state.index+1} / ${QUESTIONS.length}`;
-  questionText.innerText = q.q;
-  choicesList.innerHTML = '';
-  q.choices.forEach((c, idx)=>{
-    const el = document.createElement('div'); el.className='choice'; el.dataset.idx = idx;
-    el.innerHTML = `<div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(90deg,var(--accentA),var(--accentB));display:flex;align-items:center;justify-content:center;color:white;font-weight:800">${String.fromCharCode(65+idx)}</div><div>${escapeHtml(c)}</div>`;
-    el.addEventListener('click', ()=> {
-      // silently score and advance
-      if(Number(idx) === Number(q.answer)) state.score += POINTS_PER_QUESTION;
-      clearTimer();
-      state.index++;
-      if(state.index >= QUESTIONS.length) finishGame(); else renderQuestion();
-    });
-    choicesList.appendChild(el);
-  });
-  progressPct.innerText = `Progresso: ${Math.round((state.index/QUESTIONS.length)*100)}%`;
-  startTimer();
+  iniciarCronometro();
 }
 
-function startTimer(){
-  clearTimer();
-  state.timerId = setTimeout(()=>{
-    // timeout: treat as no answer and advance
-    state.index++;
-    if(state.index >= QUESTIONS.length) finishGame(); else renderQuestion();
-  }, SECONDS_PER_QUESTION * 1000);
-}
-function clearTimer(){ if(state.timerId){ clearTimeout(state.timerId); state.timerId = null; } }
+// cronômetro
+function iniciarCronometro() {
+  clearInterval(cronometroInterval);
+  tempo = 15;
+  atualizarCronometro();
 
-function finishGame(){
-  clearTimer();
-  quizArea.style.display='none'; endScreen.style.display='';
-  finalScore.innerText = `${state.score} pts`;
-  // save to LB (most recent first)
-  const lb = loadLB(); lb.unshift({ name: state.name, score: state.score, date: new Date().toISOString() });
-  saveLB(lb);
-  showEndBoard();
+  cronometroInterval = setInterval(() => {
+    tempo--;
+    atualizarCronometro();
+
+    if (tempo <= 0) {
+      clearInterval(cronometroInterval);
+      document.getElementById("somTempo").play(); // 🔊 toca som
+      proximaPergunta();
+    }
+  }, 1000);
 }
 
-function showEndBoard(){
-  const list = loadLB().slice(0,20);
-  if(list.length===0){ endBoard.innerHTML = '<div class="tiny muted">Nenhum resultado ainda.</div>'; return; }
-  let html = '<div style="font-weight:800;margin-bottom:8px">Últimos jogadores (local)</div>';
-  list.forEach(it=>{
-    html += `<div style="display:flex;justify-content:space-between;padding:8px;border-radius:8px;border:1px dashed rgba(15,23,42,0.04);margin-bottom:6px"><div><strong>${escapeHtml(it.name)}</strong><div class="tiny" style="color:var(--muted)">${new Date(it.date).toLocaleString()}</div></div><div style="font-weight:900">${it.score} pts</div></div>`;
-  });
-  endBoard.innerHTML = html;
+function atualizarCronometro() {
+  const display = document.getElementById("cronometro");
+  display.textContent = `⏱️ ${tempo}s`;
 }
 
-/* controls (no replay button) */
-document.getElementById('clearBoard').addEventListener('click', ()=>{ if(confirm('Apagar todos os resultados locais?')){ localStorage.removeItem(leaderboardKey); renderSidebar(); alert('Placar apagado.'); } });
-document.getElementById('exportBtn').addEventListener('click', ()=>{ const list = loadLB(); if(list.length===0){ alert('Nenhum resultado para exportar.'); return; } const blob = new Blob([JSON.stringify(list, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='placar_imunizaquiz.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); });
+// verifica resposta
+function verificarResposta(i) {
+  clearInterval(cronometroInterval);
+  if (i === perguntas[indice].correta) {
+    pontuacao += POINTS_PER_QUESTION;
+  }
+  proximaPergunta();
+}
 
-/* init */
-renderSidebar();
+// próxima pergunta
+function proximaPergunta() {
+  indice++;
+  if (indice < perguntas.length) {
+    mostrarPergunta();
+  } else {
+    mostrarResultado();
+  }
+}
 
-/* accessibility: Enter to start */
-document.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' && registerScreen.style.display !== 'none') startBtn.click(); });
+// mostra o resultado final
+function mostrarResultado() {
+  document.getElementById("quiz").style.display = "none";
+  document.getElementById("resultado").style.display = "block";
+  document.getElementById("pontuacaoFinal").textContent = `${nomeJogador}, sua pontuação final foi ${pontuacao} de 150 pontos!`;
+}
 </script>
+
 </body>
-      </html>
+</html>           
