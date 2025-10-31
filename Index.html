@@ -1,205 +1,167 @@
        <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ImunizaQuiz</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background: linear-gradient(to bottom, #cce7ff, #ffffff);
-    color: #002855;
-    margin: 0;
-    padding: 0;
-  }
-
-  h1 {
-    margin-top: 20px;
-    font-size: 2.5em;
-  }
-
-  img {
-    width: 80%;
-    max-width: 400px;
-    border-radius: 15px;
-    margin: 15px auto;
-    display: block;
-  }
-
-  #container {
-    background: white;
-    padding: 20px;
-    margin: 20px auto;
-    width: 90%;
-    max-width: 500px;
-    border-radius: 15px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  }
-
-  #cronometro {
-    font-size: 1.2em;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-
-  button {
-    background-color: #0077ff;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
-    margin: 8px;
-    cursor: pointer;
-    font-size: 1em;
-  }
-
-  button:hover {
-    background-color: #005ec7;
-  }
-
-  #nomeInput {
-    padding: 8px;
-    font-size: 1em;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ImunizaQuiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(to bottom, #e0f7ff, #ffffff);
+      color: #003366;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    img {
+      width: 80%;
+      max-width: 400px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    #quiz-container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      margin: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #timer {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #ff0000;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-
-  <h1>ImunizaQuiz</h1>
+  <h1>ImunizaQuiz 🧬</h1>
   <img src="foto.png" alt="Equipe ImunizaQuiz">
-
-  <div id="container">
-    <div id="inicio">
-      <h2>Digite seu nome para começar</h2>
-      <input type="text" id="nomeInput" placeholder="Seu nome">
+  
+  <div id="quiz-container">
+    <div id="start-screen">
+      <h2>Bem-vindo ao ImunizaQuiz!</h2>
+      <p>Digite seu nome para começar:</p>
+      <input type="text" id="playerName" placeholder="Seu nome">
       <br><br>
-      <button onclick="iniciarQuiz()">Começar</button>
+      <button onclick="startQuiz()">Começar</button>
     </div>
 
-    <div id="quiz" style="display:none;">
-      <div id="cronometro"></div>
-      <h2 id="pergunta"></h2>
-      <div id="opcoes"></div>
+    <div id="question-container" class="hidden">
+      <h3 id="question"></h3>
+      <div id="options"></div>
+      <div id="timer">⏱️ 15s</div>
     </div>
 
-    <div id="resultado" style="display:none;">
-      <h2>Resultado Final</h2>
-      <p id="pontuacaoFinal"></p>
+    <div id="result-container" class="hidden">
+      <h2>Quiz Finalizado!</h2>
+      <p id="score"></p>
     </div>
   </div>
 
-  <!-- Som do cronômetro -->
-  <audio id="somTempo" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+  <script>
+    const questions = [
+      { question: "1️⃣ O que é imunologia?", options: ["Estudo dos músculos", "Estudo do sistema imunológico", "Estudo dos ossos", "Estudo das doenças mentais"], correct: 1 },
+      { question: "2️⃣ A primeira vacina foi criada contra:", options: ["Raiva", "Varíola", "Covid-19", "Tétano"], correct: 1 },
+      { question: "3️⃣ As vacinas estimulam:", options: ["A produção de anticorpos", "A perda de memória", "A digestão", "A produção de hormônios"], correct: 0 },
+      { question: "4️⃣ O sistema imunológico é composto por:", options: ["Somente o sangue", "Coração e pulmão", "Células, tecidos e órgãos", "Somente a pele"], correct: 2 },
+      { question: "5️⃣ A imunidade inata é:", options: ["Adquirida com o tempo", "Presente desde o nascimento", "Causada por vacinas", "Transmitida geneticamente"], correct: 1 },
+      { question: "6️⃣ As células de defesa principais são:", options: ["Neurônios", "Linfócitos", "Hemácias", "Plaquetas"], correct: 1 },
+      { question: "7️⃣ O que é um antígeno?", options: ["Substância que ativa resposta imune", "Tipo de glóbulo branco", "Hormônio", "Proteína benéfica"], correct: 0 },
+      { question: "8️⃣ O HIV ataca principalmente:", options: ["Linfócitos T CD4+", "Hemoglobina", "Coração", "Fígado"], correct: 0 },
+      { question: "9️⃣ Imunidade passiva ocorre quando:", options: ["O corpo produz seus anticorpos", "Anticorpos são recebidos prontos", "Há infecção", "Há febre"], correct: 1 },
+      { question: "🔟 Vacinas são importantes porque:", options: ["Curam doenças", "Previnem doenças", "Aumentam força muscular", "Diminuem peso"], correct: 1 },
+      { question: "11️⃣ A febre é:", options: ["Uma doença", "Um sintoma", "Um vírus", "Um anticorpo"], correct: 1 },
+      { question: "12️⃣ O soro antiofídico é exemplo de:", options: ["Imunidade ativa", "Imunidade passiva", "Vacina", "Antígeno"], correct: 1 },
+      { question: "13️⃣ A função dos linfócitos B é:", options: ["Produzir anticorpos", "Destruir antígenos diretamente", "Controlar temperatura", "Transportar oxigênio"], correct: 0 },
+      { question: "14️⃣ O órgão onde os linfócitos T amadurecem é:", options: ["Baço", "Timo", "Fígado", "Medula óssea"], correct: 1 },
+      { question: "15️⃣ Um exemplo de imunidade natural é:", options: ["Tomar vacina", "Ter sarampo e ficar imune", "Receber soro", "Usar antibiótico"], correct: 1 }
+    ];
 
-<script>
-const perguntas = [
-  { pergunta: "O que é o sistema imunológico?", opcoes: ["Um conjunto de órgãos responsáveis pela digestão", "Um sistema de defesa do corpo contra agentes invasores", "Um tipo de vacina", "Uma célula específica do sangue"], correta: 1 },
-  { pergunta: "As vacinas servem para:", opcoes: ["Curar doenças", "Estimular o sistema imunológico a produzir defesa", "Substituir os anticorpos", "Diminuir o apetite"], correta: 1 },
-  { pergunta: "O que são anticorpos?", opcoes: ["Bactérias boas", "Proteínas que reconhecem e neutralizam agentes invasores", "Hormônios do corpo", "Tipos de vírus"], correta: 1 },
-  { pergunta: "Qual órgão produz células de defesa chamadas linfócitos?", opcoes: ["Baço", "Pulmão", "Coração", "Estômago"], correta: 0 },
-  { pergunta: "Qual célula é conhecida como 'soldado' do sistema imunológico?", opcoes: ["Hemácia", "Linfócito", "Plaqueta", "Neurônio"], correta: 1 },
-  { pergunta: "Qual é o principal objetivo da imunização?", opcoes: ["Prevenir doenças", "Tratar infecções", "Aumentar a temperatura corporal", "Eliminar toxinas"], correta: 0 },
-  { pergunta: "O que é uma resposta imunológica?", opcoes: ["A reação do corpo a um alimento", "A reação do corpo contra agentes invasores", "Um tipo de alergia", "Uma vacina"], correta: 1 },
-  { pergunta: "O que significa imunidade de rebanho?", opcoes: ["Quando todos os animais estão vacinados", "Quando grande parte da população está imune", "Um tipo de vírus", "Uma doença contagiosa"], correta: 1 },
-  { pergunta: "As vacinas são seguras?", opcoes: ["Sim, passam por testes rigorosos", "Não, causam doenças", "Depende da marca", "Só algumas"], correta: 0 },
-  { pergunta: "Quem desenvolveu a primeira vacina?", opcoes: ["Louis Pasteur", "Edward Jenner", "Robert Koch", "Alexander Fleming"], correta: 1 },
-  { pergunta: "O que é uma doença autoimune?", opcoes: ["Quando o sistema imunológico ataca o próprio corpo", "Quando o corpo fica sem defesa", "Quando é causada por vírus", "Quando é causada por fungos"], correta: 0 },
-  { pergunta: "O que são linfonodos?", opcoes: ["Pequenas glândulas que filtram a linfa", "Células do cérebro", "Órgãos digestivos", "Partes do coração"], correta: 0 },
-  { pergunta: "Qual célula produz anticorpos?", opcoes: ["Linfócito B", "Linfócito T", "Macrófago", "Plaqueta"], correta: 0 },
-  { pergunta: "O que acontece após uma vacinação?", opcoes: ["O corpo produz anticorpos específicos", "O corpo adoece", "O corpo rejeita a vacina", "Nada muda"], correta: 0 },
-  { pergunta: "Por que é importante manter o cartão de vacinação atualizado?", opcoes: ["Para registrar consultas médicas", "Para garantir proteção contínua contra doenças", "Para evitar filas", "Por estética"], correta: 1 }
-];
+    let currentQuestion = 0;
+    let score = 0;
+    let timer;
+    let timeLeft = 15;
 
-let nomeJogador = "";
-let indice = 0;
-let pontuacao = 0;
-const POINTS_PER_QUESTION = 10;
-let tempo = 15;
-let cronometroInterval;
-
-// inicia o quiz
-function iniciarQuiz() {
-  nomeJogador = document.getElementById("nomeInput").value.trim();
-  if (nomeJogador === "") {
-    alert("Por favor, digite seu nome!");
-    return;
-  }
-  document.getElementById("inicio").style.display = "none";
-  document.getElementById("quiz").style.display = "block";
-  mostrarPergunta();
-}
-
-// mostra cada pergunta
-function mostrarPergunta() {
-  if (indice >= perguntas.length) {
-    return mostrarResultado();
-  }
-
-  const atual = perguntas[indice];
-  document.getElementById("pergunta").textContent = atual.pergunta;
-
-  const opcoesDiv = document.getElementById("opcoes");
-  opcoesDiv.innerHTML = "";
-  atual.opcoes.forEach((op, i) => {
-    const btn = document.createElement("button");
-    btn.textContent = op;
-    btn.onclick = () => verificarResposta(i);
-    opcoesDiv.appendChild(btn);
-  });
-
-  iniciarCronometro();
-}
-
-// cronômetro
-function iniciarCronometro() {
-  clearInterval(cronometroInterval);
-  tempo = 15;
-  atualizarCronometro();
-
-  cronometroInterval = setInterval(() => {
-    tempo--;
-    atualizarCronometro();
-
-    if (tempo <= 0) {
-      clearInterval(cronometroInterval);
-      document.getElementById("somTempo").play(); // 🔊 toca som
-      proximaPergunta();
+    function startQuiz() {
+      const name = document.getElementById('playerName').value.trim();
+      if (name === "") {
+        alert("Digite seu nome para começar!");
+        return;
+      }
+      document.getElementById('start-screen').classList.add('hidden');
+      document.getElementById('question-container').classList.remove('hidden');
+      showQuestion();
     }
-  }, 1000);
-}
 
-function atualizarCronometro() {
-  const display = document.getElementById("cronometro");
-  display.textContent = `⏱️ ${tempo}s`;
-}
+    function showQuestion() {
+      if (currentQuestion >= questions.length) {
+        endQuiz();
+        return;
+      }
 
-// verifica resposta
-function verificarResposta(i) {
-  clearInterval(cronometroInterval);
-  if (i === perguntas[indice].correta) {
-    pontuacao += POINTS_PER_QUESTION;
-  }
-  proximaPergunta();
-}
+      const q = questions[currentQuestion];
+      document.getElementById('question').textContent = q.question;
+      const optionsDiv = document.getElementById('options');
+      optionsDiv.innerHTML = "";
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.textContent = opt;
+        btn.onclick = () => selectAnswer(i);
+        optionsDiv.appendChild(btn);
+      });
 
-// próxima pergunta
-function proximaPergunta() {
-  indice++;
-  if (indice < perguntas.length) {
-    mostrarPergunta();
-  } else {
-    mostrarResultado();
-  }
-}
+      timeLeft = 15;
+      document.getElementById('timer').textContent = `⏱️ ${timeLeft}s`;
+      clearInterval(timer);
+      timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timer').textContent = `⏱️ ${timeLeft}s`;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          nextQuestion();
+        }
+      }, 1000);
+    }
 
-// mostra o resultado final
-function mostrarResultado() {
-  document.getElementById("quiz").style.display = "none";
-  document.getElementById("resultado").style.display = "block";
-  document.getElementById("pontuacaoFinal").textContent = `${nomeJogador}, sua pontuação final foi ${pontuacao} de 150 pontos!`;
-}
-</script>
+    function selectAnswer(index) {
+      if (index === questions[currentQuestion].correct) score++;
+      nextQuestion();
+    }
 
+    function nextQuestion() {
+      clearInterval(timer);
+      currentQuestion++;
+      showQuestion();
+    }
+
+    function endQuiz() {
+      clearInterval(timer);
+      document.getElementById('question-container').classList.add('hidden');
+      document.getElementById('result-container').classList.remove('hidden');
+      document.getElementById('score').textContent = `Você acertou ${score} de ${questions.length} perguntas! 🎯`;
+    }
+  </script>
 </body>
-</html>           
+</html>
+  
