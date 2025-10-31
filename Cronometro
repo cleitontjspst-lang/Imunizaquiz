@@ -1,0 +1,135 @@
+<script>
+/* ===== CONFIG ===== */
+const POINTS_PER_QUESTION = 10;
+const SECONDS_PER_QUESTION = 15; // agora 15 segundos visíveis
+const QUESTIONS = [
+  { q:"Qual é o objetivo principal de uma vacina?", choices:["Curar uma doença já instalada","Estimular o sistema imune a reconhecer e combater um agente infeccioso","Substituir medicamentos","Aumentar a temperatura corporal"], answer:1 },
+  { q:"O que é tecnologia mRNA usada em vacinas modernas?", choices:["Introduz vírus vivo no corpo","Instruções para células produzirem proteína viral e gerar resposta imune","Antibiótico novo","Aditivo que aumenta alergias"], answer:1 },
+  { q:"O que significa 'infodemia'?", choices:["Aumento de doenças infecciosas","Excesso de informação (muitas vezes errada) que atrapalha achar a verdade","Nova variante de vírus","Campanha de vacinação"], answer:1 },
+  { q:"Qual atitude ajuda a combater fake news sobre vacinas?", choices:["Compartilhar informações sem checar","Checar em fontes confiáveis (Ministério/OMS)","Ignorar tudo","Confiar apenas em redes sociais"], answer:1 },
+  { q:"Qual inovação logística tem sido usada na entrega de vacinas?", choices:["Drones para áreas remotas","Ligações por rádio somente","Proibir transporte noturno","Vacinar só em hospitais"], answer:0 },
+  { q:"Por que vacinas de dose única são vantajosas?", choices:["São mais caras","Facilitam adesão sem segunda dose","Maior risco","Ineficazes"], answer:1 },
+  { q:"Qual prática NÃO ajuda a diminuir a infodemia?", choices:["Criar materiais educativos","Treinar profissionais de saúde","Eliminar opiniões diferentes","Fazer FAQs oficiais"], answer:2 },
+  { q:"Por que é importante vacinar grande parte da população?", choices:["Protege apenas o vacinado","Cria imunidade coletiva e protege vulneráveis","É só estatística","Substitui higiene"], answer:1 },
+  { q:"Quais são fontes confiáveis para checar vacinas?", choices:["Perfis populares no Instagram","Sites oficiais, universidades e publicações científicas","Mensagens de WhatsApp","Páginas anônimas"], answer:1 },
+  { q:"O que é um ensaio clínico?", choices:["Teste controlado em voluntários para avaliar segurança e eficácia","Campanha de marketing","Distribuição para farmácias","Vacina caseira"], answer:0 },
+  { q:"Como tecnologias digitais ajudam nas campanhas de vacinação?", choices:["Sem utilidade","Rastreamento, agendamento e comunicação oficial","Substituem profissionais","Criando boatos"], answer:1 },
+  { q:"Manchete sensacionalista sem fonte é geralmente:", choices:["Prova confiável","Sinal para checar a fonte antes de compartilhar","Prova científica","Política pública"], answer:1 },
+  { q:"Papel dos profissionais de saúde no combate à infodemia:", choices:["Ignorar dúvidas","Dialogar e indicar fontes confiáveis","Proibir informações","Criar teorias"], answer:1 },
+  { q:"O que garante que uma vacina é segura?", choices:["Testes, ensaios clínicos e órgãos reguladores","Opiniões em redes sociais","Publicidade","Preço"], answer:0 },
+  { q:"Por que identificar a origem de uma notícia é importante?", choices:["Para viralizar","Para verificar credibilidade e evitar boatos","Para concordância geral","Para crédito ao autor"], answer:1 }
+];
+
+/* ===== STATE & ELEMENTS ===== */
+const startBtn = document.getElementById('startBtn');
+const registerScreen = document.getElementById('registerScreen');
+const quizArea = document.getElementById('quizArea');
+const endScreen = document.getElementById('endScreen');
+const playerNameInput = document.getElementById('playerName');
+const qIndex = document.getElementById('qIndex');
+const questionText = document.getElementById('questionText');
+const choicesList = document.getElementById('choicesList');
+const progressPct = document.getElementById('progressPct');
+const finalScore = document.getElementById('finalScore');
+const endBoard = document.getElementById('endBoard');
+const leaderboardKey = 'imunizaquiz_github_cleiitoon87_v1';
+let state = { name:null, index:0, score:0, timerId:null, timeLeft:SECONDS_PER_QUESTION };
+
+/* ===== LEADERBOARD ===== */
+function loadLB(){ try{ const raw = localStorage.getItem(leaderboardKey); return raw?JSON.parse(raw):[] }catch(e){return[] } }
+function saveLB(arr){ localStorage.setItem(leaderboardKey, JSON.stringify(arr)); renderSidebar(); }
+function renderSidebar(){
+  const list = loadLB(); 
+  const div = document.getElementById('leaderboardList'); div.innerHTML='';
+  if(list.length===0){ div.innerHTML = '<div class="tiny muted">Nenhum resultado ainda.</div>'; document.getElementById('topName').innerText='—'; document.getElementById('topScore').innerText='—'; return; }
+  const top = list.slice().sort((a,b)=>b.score-a.score)[0];
+  document.getElementById('topName').innerText = top ? top.name : '—';
+  document.getElementById('topScore').innerText = top ? (top.score + ' pts') : '—';
+  const last = list.slice(0,10);
+  last.forEach(item=>{
+    const el = document.createElement('div'); el.className='leaderboard-item';
+    el.innerHTML = `<div style="font-weight:800">${escapeHtml(item.name)}</div><div class="tiny">${item.score} pts • ${new Date(item.date).toLocaleString()}</div>`;
+    div.appendChild(el);
+  });
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m])); }
+
+/* ===== GAME FLOW ===== */
+startBtn.addEventListener('click', ()=>{
+  const name = playerNameInput.value.trim();
+  if(!name){ alert('Coloque seu nome para começar.'); playerNameInput.focus(); return; }
+  state.name = name;
+  state.index = 0; state.score = 0;
+  registerScreen.style.display='none'; quizArea.style.display=''; endScreen.style.display='none';
+  renderQuestion(); renderSidebar();
+});
+
+function renderQuestion(){
+  clearTimer();
+  const q = QUESTIONS[state.index];
+  qIndex.innerText = `Pergunta ${state.index+1} / ${QUESTIONS.length}`;
+  questionText.innerText = q.q;
+  choicesList.innerHTML = '';
+
+  // temporizador visual
+  const timerBar = document.createElement('div');
+  timerBar.style.textAlign = 'right';
+  timerBar.innerHTML = `<div class="tiny muted">⏱️ <span id="timerDisplay">${SECONDS_PER_QUESTION}</span>s</div>`;
+  choicesList.appendChild(timerBar);
+
+  q.choices.forEach((c, idx)=>{
+    const el = document.createElement('div'); el.className='choice'; el.dataset.idx = idx;
+    el.innerHTML = `<div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(90deg,var(--accentA),var(--accentB));display:flex;align-items:center;justify-content:center;color:white;font-weight:800">${String.fromCharCode(65+idx)}</div><div>${escapeHtml(c)}</div>`;
+    el.addEventListener('click', ()=> {
+      if(Number(idx) === Number(q.answer)) state.score += POINTS_PER_QUESTION;
+      clearTimer();
+      state.index++;
+      if(state.index >= QUESTIONS.length) finishGame(); else renderQuestion();
+    });
+    choicesList.appendChild(el);
+  });
+  progressPct.innerText = `Progresso: ${Math.round((state.index/QUESTIONS.length)*100)}%`;
+  startTimer();
+}
+
+function startTimer(){
+  state.timeLeft = SECONDS_PER_QUESTION;
+  const display = document.getElementById('timerDisplay');
+  state.timerId = setInterval(()=>{
+    state.timeLeft--;
+    if(display) display.innerText = state.timeLeft;
+    if(state.timeLeft <= 0){
+      clearTimer();
+      state.index++;
+      if(state.index >= QUESTIONS.length) finishGame(); else renderQuestion();
+    }
+  },1000);
+}
+function clearTimer(){ if(state.timerId){ clearInterval(state.timerId); state.timerId=null; } }
+
+function finishGame(){
+  clearTimer();
+  quizArea.style.display='none'; endScreen.style.display='';
+  finalScore.innerText = `${state.score} pts`;
+  const lb = loadLB(); lb.unshift({ name: state.name, score: state.score, date: new Date().toISOString() });
+  saveLB(lb);
+  showEndBoard();
+}
+
+function showEndBoard(){
+  const list = loadLB().slice(0,20);
+  if(list.length===0){ endBoard.innerHTML = '<div class="tiny muted">Nenhum resultado ainda.</div>'; return; }
+  let html = '<div style="font-weight:800;margin-bottom:8px">Últimos jogadores (local)</div>';
+  list.forEach(it=>{
+    html += `<div style="display:flex;justify-content:space-between;padding:8px;border-radius:8px;border:1px dashed rgba(15,23,42,0.04);margin-bottom:6px"><div><strong>${escapeHtml(it.name)}</strong><div class="tiny" style="color:var(--muted)">${new Date(it.date).toLocaleString()}</div></div><div style="font-weight:900">${it.score} pts</div></div>`;
+  });
+  endBoard.innerHTML = html;
+}
+
+/* controles extras */
+document.getElementById('clearBoard').addEventListener('click', ()=>{ if(confirm('Apagar todos os resultados locais?')){ localStorage.removeItem(leaderboardKey); renderSidebar(); alert('Placar apagado.'); } });
+document.getElementById('exportBtn').addEventListener('click', ()=>{ const list = loadLB(); if(list.length===0){ alert('Nenhum resultado para exportar.'); return; } const blob = new Blob([JSON.stringify(list, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='placar_imunizaquiz.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); });
+
+renderSidebar();
+document.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' && registerScreen.style.display !== 'none') startBtn.click(); });
+</script>
