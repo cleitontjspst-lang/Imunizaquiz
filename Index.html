@@ -1,4 +1,161 @@
-<!doctype html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ImunizaQuiz</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to bottom, #ffffff, #a8d0f0);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    h1 {
+      color: #003366;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    #game-container {
+      background: white;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+    }
+
+    #cronometro {
+      text-align: right;
+      font-weight: 700;
+      color: #1E3A8A;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    #score {
+      font-size: 1.5rem;
+      color: #003366;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>ImunizaQuiz</h1>
+  <img src="foto.png" alt="Equipe ImunizaQuiz">
+  
+  <div id="game-container">
+    <div id="start-screen">
+      <p>Digite seu nome para começar:</p>
+      <input type="text" id="player-name" placeholder="Seu nome">
+      <button class="btn" id="start-btn">Começar</button>
+    </div>
+
+    <div id="quiz-screen" style="display: none;">
+      <div id="cronometro"></div>
+      <p id="question"></p>
+      <div id="options"></div>
+    </div>
+
+    <div id="end-screen" style="display: none;">
+      <p>Quiz finalizado!</p>
+      <p id="score"></p>
+    </div>
+  </div>
+
+  <script>
+    const QUESTIONS = [
+      { q: "O que é imunização?", a: ["Processo de deixar o corpo imune a doenças", "Tipo de alergia", "Remédio para gripe"], correct: 0 },
+      { q: "Qual órgão é responsável pela defesa do corpo?", a: ["Fígado", "Sistema imunológico", "Pulmões"], correct: 1 },
+      { q: "Qual é a principal forma de prevenção contra doenças infecciosas?", a: ["Vacinação", "Atividade física", "Higiene"], correct: 0 },
+      // ... (coloque aqui até 15 perguntas)
+    ];
+
+    const player = { name: "", score: 0 };
+    let index = 0;
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const endScreen = document.getElementById("end-screen");
+
+    document.getElementById("start-btn").addEventListener("click", () => {
+      const name = document.getElementById("player-name").value.trim();
+      if (name === "") return alert("Digite seu nome!");
+      player.name = name;
+      startScreen.style.display = "none";
+      quizScreen.style.display = "block";
+      renderQuestion();
+    });
+
+    function renderQuestion() {
+      iniciarCronometro(); // <--- cronômetro inicia aqui
+      const q = QUESTIONS[index];
+      document.getElementById("question").textContent = q.q;
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+
+      q.a.forEach((opt, i) => {
+        const btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.classList.add("btn");
+        btn.addEventListener("click", () => {
+          pararCronometro(); // <--- cronômetro para ao responder
+          if (i === q.correct) player.score += 10;
+          index++;
+          if (index < QUESTIONS.length) renderQuestion();
+          else finishGame();
+        });
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    function finishGame() {
+      quizScreen.style.display = "none";
+      endScreen.style.display = "block";
+      document.getElementById("score").textContent = `${player.name}, sua pontuação foi: ${player.score} pontos!`;
+    }
+
+    function pularPerguntaPorTempo() {
+      index++;
+      if (index < QUESTIONS.length) renderQuestion();
+      else finishGame();
+    }
+  </script>
+
+  <script src="timer.js"></script>
+</body>
+</html>
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
