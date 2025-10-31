@@ -1,128 +1,7 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>ImunizaQuiz</title>
-<style>
-  :root{
-    --bg:#ffffff; --accentA:#1E3A8A; --accentB:#60A5FA;
-    --muted:#475569; --text:#071024; --card:#FFFFFF; --radius:12px;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
-    background:linear-gradient(180deg,#1E3A8A,#60A5FA);
-    color:var(--text);padding:18px;display:flex;align-items:center;justify-content:center;
-  }
-  .wrap{width:100%;max-width:980px;border-radius:14px;padding:18px;box-shadow:0 12px 30px rgba(7,18,38,0.18);background:#ffffffee}
-  header{text-align:center;margin-bottom:16px}
-  .logo{width:70px;height:70px;border-radius:14px;background:linear-gradient(135deg,var(--accentA),var(--accentB));display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:22px;margin:0 auto 10px}
-  h1{font-size:26px;margin:0;color:#071024}
-  p.lead{margin:0;color:var(--muted);font-size:15px}
-  .team-photo{width:100%;border-radius:14px;margin-top:16px;box-shadow:0 4px 10px rgba(0,0,0,0.12)}
-  .layout{display:grid;grid-template-columns:1fr 300px;gap:14px;margin-top:12px}
-  @media(max-width:860px){.layout{grid-template-columns:1fr}.sidebar{order:2}}
-  .card{background:var(--card);border-radius:10px;padding:14px;box-shadow:0 8px 18px rgba(2,6,23,0.05)}
-  input[type="text"]{padding:12px 14px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);width:260px;font-size:15px}
-  button{background:linear-gradient(90deg,var(--accentA),var(--accentB));color:white;border:none;padding:12px 14px;border-radius:10px;font-weight:700;cursor:pointer;font-size:15px}
-  .muted{color:var(--muted);font-size:13px}
-  .question-box{padding:14px;border-radius:10px;margin-top:8px;border:1px solid rgba(96,165,250,0.1);background:#fff}
-  .question-text{font-weight:800;font-size:18px}
-  .choices{display:grid;gap:10px;margin-top:12px}
-  .choice{display:flex;gap:12px;align-items:center;padding:14px;border-radius:10px;background:#fff;border:1px solid rgba(15,23,42,0.06);cursor:pointer;user-select:none;font-size:15px}
-  .choice:active{opacity:0.95}
-  .tiny{font-size:13px;color:var(--muted)}
-  .center{display:flex;justify-content:center;align-items:center;gap:10px}
-  .leaderboard-item{display:flex;justify-content:space-between;padding:8px;border-radius:8px;border:1px dashed rgba(15,23,42,0.04);align-items:center;margin-bottom:8px}
-  footer.small{margin-top:12px;color:var(--muted);font-size:12px;text-align:center}
-  @media (max-width:420px){
-    input[type="text"]{width:160px}
-    .choice{padding:16px;font-size:16px}
-    button{padding:12px 14px;font-size:16px}
-  }
-</style>
-</head>
-<body>
-  <div class="wrap" role="main">
-    <header>
-      <div class="logo">IQ</div>
-      <h1>ImunizaQuiz</h1>
-      <p class="lead">Inovações em imunização & combate à infodemia — jogo para apresentação</p>
-      <img src="foto.png" alt="Equipe ImunizaQuiz" class="team-photo">
-    </header>
-
-    <div class="layout">
-      <div>
-        <div class="card" id="gameCard">
-          <!-- REGISTER -->
-          <div id="registerScreen">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-              <div>
-                <div class="muted">Digite seu nome</div>
-                <div style="margin-top:8px">
-                  <input id="playerName" type="text" placeholder="Seu nome (apenas nome)" autocomplete="off" />
-                </div>
-              </div>
-              <div style="text-align:right">
-                <div class="tiny muted">Pronto?</div>
-                <div style="margin-top:8px"><button id="startBtn">Começar</button></div>
-              </div>
-            </div>
-            <div style="margin-top:10px" class="tiny muted">Durante o jogo não aparece tempo nem pontuação — só o resultado final no fim.</div>
-          </div>
-
-          <!-- QUIZ -->
-          <div id="quizArea" style="display:none">
-            <div class="question-box" aria-live="polite">
-              <div class="muted tiny" id="qIndex">Pergunta 1 / 15</div>
-              <div class="question-text" id="questionText">Carregando...</div>
-              <div class="choices" id="choicesList"></div>
-            </div>
-
-            <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
-              <div class="tiny muted" id="progressPct">Progresso: 0%</div>
-              <div style="margin-left:auto" class="tiny muted">Toque em uma resposta para avançar.</div>
-            </div>
-          </div>
-
-          <!-- END -->
-          <div id="endScreen" style="display:none;margin-top:12px;text-align:center">
-            <h2 style="margin:6px 0">Fim do ImunizaQuiz 🎉</h2>
-            <div class="tiny muted">Pontuação final</div>
-            <div style="font-size:44px;font-weight:900;margin-top:8px" id="finalScore">0 pts</div>
-            <div style="margin-top:14px;text-align:left" id="endBoard"></div>
-            <div style="margin-top:12px" class="tiny muted">Para jogar novamente, recarregue a página (F5) ou abra o link de novo.</div>
-          </div>
-        </div>
-        <footer class="small">Salve o arquivo como <code>index.html</code> e faça upload no GitHub Pages.</footer>
-      </div>
-
-      <!-- sidebar -->
-      <aside class="sidebar">
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div><div class="tiny muted">Últimos (local)</div><div style="font-weight:800" id="topName">—</div></div>
-            <div style="text-align:right"><div class="tiny muted">Maior</div><div style="font-weight:800" id="topScore">—</div></div>
-          </div>
-
-          <div style="margin-top:12px" id="leaderboardList"></div>
-
-          <div style="margin-top:10px;display:flex;gap:8px">
-            <button id="clearBoard" style="background:transparent;border:1px solid rgba(15,23,42,0.06);padding:8px 10px;border-radius:8px">Limpar placar</button>
-            <button id="exportBtn" style="background:transparent;border:1px solid rgba(15,23,42,0.06);padding:8px 10px;border-radius:8px">Exportar JSON</button>
-          </div>
-          <div style="margin-top:10px" class="tiny muted">Placar salvo apenas neste navegador.</div>
-        </div>
-      </aside>
-    </div>
-  </div>
-
-<script>
+      <script>
 /* ===== CONFIG ===== */
 const POINTS_PER_QUESTION = 10;
-const SECONDS_PER_QUESTION = 20;
+const SECONDS_PER_QUESTION = 15; // agora 15 segundos visíveis
 const QUESTIONS = [
   { q:"Qual é o objetivo principal de uma vacina?", choices:["Curar uma doença já instalada","Estimular o sistema imune a reconhecer e combater um agente infeccioso","Substituir medicamentos","Aumentar a temperatura corporal"], answer:1 },
   { q:"O que é tecnologia mRNA usada em vacinas modernas?", choices:["Introduz vírus vivo no corpo","Instruções para células produzirem proteína viral e gerar resposta imune","Antibiótico novo","Aditivo que aumenta alergias"], answer:1 },
@@ -154,20 +33,18 @@ const progressPct = document.getElementById('progressPct');
 const finalScore = document.getElementById('finalScore');
 const endBoard = document.getElementById('endBoard');
 const leaderboardKey = 'imunizaquiz_github_cleiitoon87_v1';
-let state = { name:null, index:0, score:0, timerId:null };
+let state = { name:null, index:0, score:0, timerId:null, timeLeft:SECONDS_PER_QUESTION };
 
 /* ===== LEADERBOARD ===== */
 function loadLB(){ try{ const raw = localStorage.getItem(leaderboardKey); return raw?JSON.parse(raw):[] }catch(e){return[] } }
 function saveLB(arr){ localStorage.setItem(leaderboardKey, JSON.stringify(arr)); renderSidebar(); }
 function renderSidebar(){
-  const list = loadLB().slice(); // most recent first already
+  const list = loadLB(); 
   const div = document.getElementById('leaderboardList'); div.innerHTML='';
   if(list.length===0){ div.innerHTML = '<div class="tiny muted">Nenhum resultado ainda.</div>'; document.getElementById('topName').innerText='—'; document.getElementById('topScore').innerText='—'; return; }
-  // determine top score
   const top = list.slice().sort((a,b)=>b.score-a.score)[0];
   document.getElementById('topName').innerText = top ? top.name : '—';
   document.getElementById('topScore').innerText = top ? (top.score + ' pts') : '—';
-  // show up to last 10 (most recent first)
   const last = list.slice(0,10);
   last.forEach(item=>{
     const el = document.createElement('div'); el.className='leaderboard-item';
@@ -193,11 +70,17 @@ function renderQuestion(){
   qIndex.innerText = `Pergunta ${state.index+1} / ${QUESTIONS.length}`;
   questionText.innerText = q.q;
   choicesList.innerHTML = '';
+
+  // temporizador visual
+  const timerBar = document.createElement('div');
+  timerBar.style.textAlign = 'right';
+  timerBar.innerHTML = `<div class="tiny muted">⏱️ <span id="timerDisplay">${SECONDS_PER_QUESTION}</span>s</div>`;
+  choicesList.appendChild(timerBar);
+
   q.choices.forEach((c, idx)=>{
     const el = document.createElement('div'); el.className='choice'; el.dataset.idx = idx;
     el.innerHTML = `<div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(90deg,var(--accentA),var(--accentB));display:flex;align-items:center;justify-content:center;color:white;font-weight:800">${String.fromCharCode(65+idx)}</div><div>${escapeHtml(c)}</div>`;
     el.addEventListener('click', ()=> {
-      // silently score and advance
       if(Number(idx) === Number(q.answer)) state.score += POINTS_PER_QUESTION;
       clearTimer();
       state.index++;
@@ -210,20 +93,24 @@ function renderQuestion(){
 }
 
 function startTimer(){
-  clearTimer();
-  state.timerId = setTimeout(()=>{
-    // timeout: treat as no answer and advance
-    state.index++;
-    if(state.index >= QUESTIONS.length) finishGame(); else renderQuestion();
-  }, SECONDS_PER_QUESTION * 1000);
+  state.timeLeft = SECONDS_PER_QUESTION;
+  const display = document.getElementById('timerDisplay');
+  state.timerId = setInterval(()=>{
+    state.timeLeft--;
+    if(display) display.innerText = state.timeLeft;
+    if(state.timeLeft <= 0){
+      clearTimer();
+      state.index++;
+      if(state.index >= QUESTIONS.length) finishGame(); else renderQuestion();
+    }
+  },1000);
 }
-function clearTimer(){ if(state.timerId){ clearTimeout(state.timerId); state.timerId = null; } }
+function clearTimer(){ if(state.timerId){ clearInterval(state.timerId); state.timerId=null; } }
 
 function finishGame(){
   clearTimer();
   quizArea.style.display='none'; endScreen.style.display='';
   finalScore.innerText = `${state.score} pts`;
-  // save to LB (most recent first)
   const lb = loadLB(); lb.unshift({ name: state.name, score: state.score, date: new Date().toISOString() });
   saveLB(lb);
   showEndBoard();
@@ -239,15 +126,10 @@ function showEndBoard(){
   endBoard.innerHTML = html;
 }
 
-/* controls (no replay button) */
+/* controles extras */
 document.getElementById('clearBoard').addEventListener('click', ()=>{ if(confirm('Apagar todos os resultados locais?')){ localStorage.removeItem(leaderboardKey); renderSidebar(); alert('Placar apagado.'); } });
 document.getElementById('exportBtn').addEventListener('click', ()=>{ const list = loadLB(); if(list.length===0){ alert('Nenhum resultado para exportar.'); return; } const blob = new Blob([JSON.stringify(list, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='placar_imunizaquiz.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); });
 
-/* init */
 renderSidebar();
-
-/* accessibility: Enter to start */
 document.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' && registerScreen.style.display !== 'none') startBtn.click(); });
 </script>
-</body>
-</html>
